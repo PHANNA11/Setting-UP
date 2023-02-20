@@ -1,5 +1,6 @@
 import 'package:app1/detail.dart';
 import 'package:app1/font_controller.dart';
+import 'package:app1/local_languege.dart';
 import 'package:app1/pic_model.dart';
 import 'package:app1/them_controller.dart';
 import 'package:flutter/material.dart';
@@ -8,12 +9,13 @@ import 'package:get_storage/get_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await TraslateLanguege().initlanguege();
   await GetStorage.init();
   runApp(const MyApp());
 }
 
 ThemeModeController themeModeController = Get.put(ThemeModeController());
+TraslateLanguege traslateLanguege = Get.put(TraslateLanguege());
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -22,6 +24,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleBuilder(builder: (context) {
       return GetMaterialApp(
+        translations: LocalModel(),
+        locale: traslateLanguege.english.value
+            ? const Locale('en', 'US')
+            : const Locale('KH', 'KH'),
         title: 'Flutter Demo',
         theme: themeModeController.theme,
         home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -42,6 +48,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   ThemeModeController themeModeController = Get.put(ThemeModeController());
   FontController fontController = Get.put(FontController());
+  TraslateLanguege traslateLanguege = Get.put(TraslateLanguege());
   @override
   Widget build(BuildContext context) {
     return GetBuilder<FontController>(builder: (context) {
@@ -54,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Card(
                     // color: Colors.blueAccent,
                     child: ListTile(
-                      leading: Text('Dark/Light',
+                      leading: Text('dark_mode'.tr,
                           style: TextStyle(
                               fontSize: 20,
                               fontFamily: fontController.fontTheme.toString())),
@@ -62,6 +69,26 @@ class _MyHomePageState extends State<MyHomePage> {
                           value: themeModeController.isDark,
                           onChanged: themeModeController.changeTheme),
                     ),
+                  ),
+                  Card(
+                    // color: Colors.blueAccent,
+                    child: GetBuilder<TraslateLanguege>(builder: (context) {
+                      return ListTile(
+                        leading: Text('ខ្មែរ / English',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontFamily:
+                                    fontController.fontTheme.toString())),
+                        title: Switch(
+                            value: traslateLanguege.english.value,
+                            onChanged: (value) async {
+                              var localeEng = const Locale('en', 'US');
+                              var localeKh = const Locale('KH', 'KH');
+                              traslateLanguege.switchLanguege(value.obs);
+                              Get.updateLocale(value ? localeEng : localeKh);
+                            }),
+                      );
+                    }),
                   ),
                   Card(
                       child: ExpansionTile(
@@ -100,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
             })),
           ),
           appBar: AppBar(
-            title: Text(widget.title,
+            title: Text('setting'.tr,
                 style: TextStyle(
                     fontSize: 20,
                     fontFamily: fontController.fontTheme.toString())),
