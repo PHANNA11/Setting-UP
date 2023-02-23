@@ -17,7 +17,7 @@ class _FlashScreenState extends State<FlashScreen> {
         navigateWhere: true,
         navigateRoute: const MyHomePage(title: 'Flutter Demo Home Page'),
         text: WavyAnimatedText(
-          "Flutter Setting",
+          "Flutter Setting learning",
           textStyle: const TextStyle(
             color: Colors.red,
             fontSize: 32.0,
