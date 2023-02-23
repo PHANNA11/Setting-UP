@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalModel extends Translations {
   @override
@@ -62,16 +63,22 @@ class LocalModel extends Translations {
 
 class TraslateLanguege extends GetxController {
   RxBool english = false.obs;
-  initlanguege() async {
-    english.value = true;
+
+  Future<bool> initlanguege() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    english.value = prefs.getBool('english') ?? true;
+
+    log('localInit:$english');
     update();
-    log('local:$english');
-    return english;
+    return english.value;
   }
 
   switchLanguege(RxBool eng) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     english = eng;
-    log('local:$english');
+    await prefs.setBool('english', eng.value);
+    english.value = prefs.getBool('english')!;
+    log('localSwitch:$english');
     update();
   }
 }

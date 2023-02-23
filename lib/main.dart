@@ -1,4 +1,5 @@
 import 'package:app1/detail.dart';
+import 'package:app1/flash_screen.dart';
 import 'package:app1/font_controller.dart';
 import 'package:app1/local_languege.dart';
 import 'package:app1/pic_model.dart';
@@ -7,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
-void main() async {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await TraslateLanguege().initlanguege();
   await GetStorage.init();
@@ -24,13 +25,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleBuilder(builder: (context) {
       return GetMaterialApp(
+        initialRoute: traslateLanguege.initlanguege().toString(),
         translations: LocalModel(),
         locale: traslateLanguege.english.value
             ? const Locale('en', 'US')
             : const Locale('KH', 'KH'),
         title: 'Flutter Demo',
         theme: themeModeController.theme,
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        home: const FlashScreen(),
       );
     });
   }
@@ -72,23 +74,26 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   Card(
                     // color: Colors.blueAccent,
-                    child: GetBuilder<TraslateLanguege>(builder: (context) {
-                      return ListTile(
-                        leading: Text('ខ្មែរ / English',
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontFamily:
-                                    fontController.fontTheme.toString())),
-                        title: Switch(
-                            value: traslateLanguege.english.value,
-                            onChanged: (value) async {
-                              var localeEng = const Locale('en', 'US');
-                              var localeKh = const Locale('KH', 'KH');
-                              traslateLanguege.switchLanguege(value.obs);
-                              Get.updateLocale(value ? localeEng : localeKh);
-                            }),
-                      );
-                    }),
+                    child: GetBuilder<TraslateLanguege>(
+                        init: traslateLanguege,
+                        builder: (context) {
+                          return ListTile(
+                            leading: Text('ខ្មែរ / English',
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontFamily:
+                                        fontController.fontTheme.toString())),
+                            title: Switch(
+                                value: traslateLanguege.english.value,
+                                onChanged: (value) async {
+                                  var localeEng = const Locale('en', 'US');
+                                  var localeKh = const Locale('KH', 'KH');
+                                  traslateLanguege.switchLanguege(value.obs);
+                                  Get.updateLocale(
+                                      value ? localeEng : localeKh);
+                                }),
+                          );
+                        }),
                   ),
                   Card(
                       child: ExpansionTile(
